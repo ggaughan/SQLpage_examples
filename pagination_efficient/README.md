@@ -2,7 +2,7 @@
 
 This example shows how pagination can be fast, regardless of the size of the data. It requires [SQLPage](https://sql.ophir.dev/) v0.18.0 or above. It uses [htmx](https://htmx.org/) to reload only the table component, leaving the rest of the html intact while paging through the results. 
 
-**Note:** On first run, the initial migration will create a large `sample` table with a million rows. This could take a minute or two and use around 160MB, unless you first adjust the maximum row count in the `0001_create_sample.sql` file. Maybe try it with billions of rows if you have the space: the pagination speed should be as fast regardless. This example uses SQLite but it should easily port to PostgreSQL.
+**Note:** On first run, the initial migration will create a large `sample` table with a million rows. This could take a minute or two and use around 160MiB, unless you first adjust the maximum row count in the `0001_create_sample.sql` file. Maybe try it with billions of rows if you have the space: the pagination speed should be as fast regardless. This example uses SQLite but it should easily port to PostgreSQL.
 
 ![](./screenshots/pagination.png)
 

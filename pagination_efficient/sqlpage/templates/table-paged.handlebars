@@ -1,0 +1,94 @@
+<!-- 
+    parameters required:
+        table_id - a unique reference to link the pagination with its table
+        page_last - a url-encoded json array containing the largest order-by values
+    each table row is expected to have a `_sqlpage_order_key` column containing a json array of the order-by values
+
+    most of this code is from table.handlebars
+    additions include the pagination-controls and including a hidden table column for the `_sqlpage_order_key`
+-->
+<div class="card my-2 {{class}}" {{#if id}}id="{{id}}"{{/if}}>
+    <div class="card-body">
+        <div class="table-responsive" {{#if (or sort search)}}data-pre-init="table"{{/if}}>
+            <!-- todo greg: use a handlebars partial to include the pagination-controls in the original table template? -->
+            <div class="p-2 btn-list pagination-controls" hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#spinner">
+                <!-- todo greg: set hrefs and use hx-boost but with no history... or ideally fragment switch history (via # suffix - though what if multiple per page?) -->
+                <a href="#"
+                    hx-get="/table-sample.sql?_sqlpage_embed"
+                    class="btn " role="button">|<</a>
+                <a href="#"
+                    hx-get="/table-sample.sql?_sqlpage_embed&page_rev=1"
+                    hx-include="#tp{{table_id}} tr:first-child input[name='page_next']"
+                    class="btn " role="button">Prev</a>
+                <a href="#"
+                    hx-get="/table-sample.sql?_sqlpage_embed" 
+                    hx-include="#tp{{table_id}} tr:last-child input[name='page_next']"
+                    class="btn " role="button">Next</a>
+                <a href="#"
+                    hx-get="/table-sample.sql?_sqlpage_embed&page_rev=1&page_next={{page_last}}"
+                    class="btn " role="button">>|</a>
+                <div id="spinner" class="htmx-indicator spinner-border"></div>
+            </div>
+
+            {{#if search}}
+                {{! todo greg: replace with db-search: pass filter as parameters }}
+                <div class="p-2">
+                    <input type="search" class="form-control form-control-rounded fs-6 search" placeholder="Search…">
+                </div>
+            {{/if}}
+            <table id="tp{{table_id}}" class="table">
+                {{#each_row}}
+                    {{#if (eq @row_index 0)}}
+                        <thead>
+                        <tr>
+                            {{#each this}}
+                                {{~#if (starts_with @key '_sqlpage_order_key')~}}
+                                <th class="d-none"><input type="hidden" name="page_next" value="{{this}}"/></th>
+                                {{~/if~}}
+                                {{#if (not (starts_with @key '_sqlpage_'))}}
+                                <th class="
+                                    {{~#if (array_contains ../../align_right @key)}} text-end {{/if~}}
+                                ">
+                                    {{~#if ../../sort~}}
+                                        <button class="table-sort sort d-inline" data-sort="{{@key}}">{{@key}}</button>
+                                    {{~else~}}
+                                        {{~@key~}}
+                                    {{~/if~}}
+                                </th>
+                                {{/if}}
+                            {{/each}}
+                        </tr>
+                        </thead>
+                    <tbody class="table-tbody list">{{#delay}}</tbody>{{/delay}}
+                    {{/if}}
+
+                    <tr class="{{_sqlpage_css_class}} {{#if _sqlpage_color}}bg-{{_sqlpage_color}}-lt{{/if}}">
+                        {{~#each this~}}
+                            {{~#if (starts_with @key '_sqlpage_order_key')~}}
+                            <td class="d-none"><input type="hidden" name="page_next" value="{{this}}"/></td>
+                            {{~/if~}}
+                            {{~#if (not (starts_with @key '_sqlpage_'))~}}
+                            <td class="
+                                {{~@key~}}
+                                {{~#if (array_contains ../../align_right @key)
+                                }} text-end {{
+                                /if}} align-middle">
+                                {{~#if (array_contains ../../markdown @key)~}}
+                                    {{{markdown this}}}
+                                {{~else~}}
+                                {{~#if (array_contains ../../icon @key)~}}
+                                    {{~icon_img this~}}
+                                {{~else~}}
+                                    {{this}}
+                                {{~/if~}}
+                                {{~/if~}}
+                            </td>
+                            {{~/if~}}
+                        {{~/each~}}
+                    </tr>
+                {{/each_row}}
+                {{flush_delayed}}
+            </table>
+        </div>
+    </div>
+</div>

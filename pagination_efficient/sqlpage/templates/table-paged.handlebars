@@ -1,4 +1,4 @@
-<!-- 
+{{! 
     parameters required:
         table_id - a unique reference to link the pagination with its table
         page_last - a url-encoded json array containing the largest order-by values
@@ -6,13 +6,13 @@
 
     most of this code is from table.handlebars
     additions include the pagination-controls and including a hidden table column for the `_sqlpage_order_key`
--->
+}}
 <div class="card my-2 {{class}}" {{#if id}}id="{{id}}"{{/if}}>
     <div class="card-body">
         <div class="table-responsive" {{#if (or sort search)}}data-pre-init="table"{{/if}}>
-            <!-- todo greg: use a handlebars partial to include the pagination-controls in the original table template? -->
+            {{! todo greg: use a handlebars partial to include the pagination-controls in the original table template? }}
             <div class="p-2 btn-list pagination-controls" hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#spinner">
-                <!-- todo greg: set hrefs and use hx-boost but with no history... or ideally fragment switch history (via # suffix - though what if multiple per page?) -->
+                {{! todo greg: set hrefs and use hx-boost but with no history... or ideally fragment switch history (via # suffix - though what if multiple per page?) }}
                 <a href="#"
                     hx-get="/table-sample.sql?_sqlpage_embed"
                     class="btn " role="button">|<</a>
